@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#f4f7fc">
-<title>外采清单生成器 · 交互演示（单文件版）</title>
-<meta name="description" content="把订单截图与发票自动配对成外采清单，逐行校对、按成本中心分摊，一键导出带图 Excel。可在手机上直接点选体验。">
+<title>外采清单生成器 · 交互演示</title>
+<meta name="description" content="把订单截图与发票自动配对成外采清单，逐行校对、按成本中心分摊，最后生成带图的 Excel 表格。可在手机上直接点选体验。">
 <style>
 /* ========== tokens ========== */
 :root{
@@ -168,8 +168,8 @@ b{font-weight:700}
 }
 @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 .panel-h{
-  display:flex;align-items:baseline;justify-content:space-between;gap:8px;
-  margin-bottom:12px;
+  display:flex;align-items:baseline;justify-content:space-between;gap:6px 8px;
+  flex-wrap:wrap;margin-bottom:12px;
 }
 .panel-h b{font-size:15px}
 .panel-h .hint{font-size:11px;color:var(--ink3)}
@@ -598,6 +598,104 @@ body.has-bar{padding-bottom:76px}
   *{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
 }
 
+/* ========== 产出标记 / 为什么 ========== */
+.yield{
+  font-size:10px;color:#0a7a55;background:#e9f8f1;border:1px solid #cfece1;
+  padding:3px 8px;border-radius:6px;font-weight:600;white-space:nowrap;
+}
+.why{
+  margin:12px 0 2px;padding:10px 12px;border-radius:10px;
+  background:#f7faff;border:1px solid var(--line-2);
+  font-size:11px;line-height:1.8;color:var(--ink3);
+}
+.why b{display:block;color:var(--ink2);font-size:11.5px;margin-bottom:3px;font-weight:700}
+.hint-line{margin:-2px 0 10px;font-size:11px;color:var(--ink3)}
+
+/* ========== 表格预览 ========== */
+.pv{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.pv-head{display:flex;align-items:flex-end;justify-content:space-between;gap:8px;margin-bottom:9px;flex-wrap:wrap}
+.pv-title b{display:block;font-size:14px;line-height:1.3}
+.pv-title .hint{font-size:10px;color:var(--ink3)}
+.pv-tabs{display:flex;gap:3px;background:#f1f5fc;padding:3px;border-radius:9px}
+.pv-tabs button{padding:5px 9px;border-radius:7px;font-size:11px;color:var(--ink3);white-space:nowrap}
+.pv-tabs button.on{background:#fff;color:var(--brand);font-weight:700;box-shadow:0 1px 3px rgba(16,32,64,.14)}
+.pv-scroll{
+  overflow-x:auto;border:1px solid var(--line);border-radius:11px;background:#fff;
+  -webkit-overflow-scrolling:touch;scrollbar-width:thin;
+}
+table.xls{
+  border-collapse:separate;border-spacing:0;min-width:1010px;
+  font-size:10.5px;font-variant-numeric:tabular-nums;
+}
+table.xls.s2{min-width:0;width:100%;table-layout:fixed}
+table.xls th,table.xls td{
+  border-right:1px solid #e3e9f3;border-bottom:1px solid #e3e9f3;
+  padding:4px 6px;white-space:nowrap;color:var(--ink2);vertical-align:middle;
+}
+table.xls tr:last-child td{border-bottom:0}
+table.xls th:last-child,table.xls td:last-child{border-right:0}
+table.xls thead th{background:#eff2f7;color:#31405a;font-size:10px;font-weight:700;text-align:center}
+table.xls .t-title{background:#fff;text-align:center;font-size:12.5px;font-weight:700;color:var(--ink);padding:7px 6px}
+table.xls td.c{text-align:center}
+table.xls td.r{text-align:right}
+table.xls td.nm{white-space:normal;width:172px;min-width:172px;color:var(--ink);line-height:1.35;font-size:10.5px}
+table.xls td.cc{white-space:normal;width:138px;min-width:138px;font-size:9.5px;color:var(--ink3);line-height:1.35}
+table.xls td img{width:26px;height:32px;object-fit:cover;border-radius:3px;margin:0 auto;display:block}
+table.xls td img.inv{width:36px;height:27px;object-fit:contain;background:#f5f8fd}
+table.xls tr.total td{background:#fff5c2;font-weight:700;color:#6b5200}
+
+/* 左侧两列吸附 */
+table.xls .st1{position:sticky;left:0;z-index:2;background:#fff;width:34px;min-width:34px}
+table.xls .st2{position:sticky;left:34px;z-index:2;background:#fff;box-shadow:2px 0 4px -3px rgba(16,32,64,.28)}
+table.xls th.st1,table.xls th.st2{background:#eff2f7;z-index:4}
+table.xls tr.total td.st1,table.xls tr.total td.st2{background:#fff5c2}
+.pv-hint{margin:7px 0 0;font-size:10px;color:var(--ink3);text-align:center}
+
+/* ========== 表格上方关键数字 ========== */
+.pv-meta{
+  display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;
+  margin:0 0 8px;font-size:11px;color:var(--ink3);line-height:1.5;
+}
+.pv-meta>b{font-size:12.5px;color:var(--ink);font-weight:700}
+.pv-meta span{font-size:11px}
+.pv-meta span b{color:var(--brand);font-weight:700;font-variant-numeric:tabular-nums}
+
+/* 右侧渐隐，提示还能横向滑动 */
+.pv-wrap{position:relative}
+
+
+@media (max-width:480px){
+  table.xls{font-size:10px;min-width:960px}
+  table.xls .st1{width:30px;min-width:30px}
+  table.xls td.nm{width:138px;min-width:138px;font-size:10px}
+  table.xls .st2{left:30px}
+  table.xls td.cc{width:118px;min-width:118px;font-size:9px}
+  table.xls th,table.xls td{padding:4px 5px}
+}
+
+/* ========== 关键列模式 ========== */
+.pv-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px;min-height:18px}
+.pv-hint{font-size:10px;color:var(--ink3)}
+.pv-more{font-size:11px;color:var(--brand);font-weight:600;padding:2px 2px;white-space:nowrap}
+table.xls.fit{min-width:0;width:100%;table-layout:fixed}
+table.xls.fit td.nm{width:auto;min-width:0;white-space:normal;font-size:11px;line-height:1.4;word-break:break-word}
+table.xls.fit th:first-child,table.xls.fit td:first-child{width:32px;text-align:center}
+table.xls.fit td.nm{padding-right:8px}
+table.xls.fit th:nth-child(3),table.xls.fit td:nth-child(3){width:64px;text-align:right}
+table.xls.fit th:nth-child(4),table.xls.fit td:nth-child(4){width:72px;text-align:right}
+.flag{
+  display:inline-block;margin-left:5px;font-style:normal;font-size:9px;
+  color:#b0741a;background:#fff6e5;border:1px solid #f4e2c0;border-radius:4px;padding:0 4px;
+  vertical-align:1px;
+}
+
+table.xls.s2 td.nm{width:auto;min-width:0;white-space:normal;font-size:10px;line-height:1.35}
+table.xls.s2 th:nth-child(1),table.xls.s2 td:nth-child(1){width:30px;text-align:center}
+table.xls.s2 th:nth-child(3),table.xls.s2 td:nth-child(3){width:86px;white-space:normal;font-size:9.5px}
+table.xls.s2 th:nth-child(4),table.xls.s2 td:nth-child(4){width:58px;text-align:center;font-size:9.5px}
+table.xls.s2 th:nth-child(5),table.xls.s2 td:nth-child(5){width:64px;text-align:right}
+table.xls.s2 .st2{position:static;box-shadow:none}
+
 </style>
 </head>
 <body>
@@ -618,21 +716,24 @@ body.has-bar{padding-bottom:76px}
 <main>
 
   <section class="hero">
-    <p class="eyebrow">20 份凭证 → 1 张能报的清单</p>
-    <h1>把订单截图和发票<br><em>自动拼</em>成外采清单</h1>
-    <p class="lede">识别金额、配对凭证、按成本中心分摊，逐行校对后一键导出带图 Excel。这一页可以真的点开操作。</p>
+    <p class="eyebrow">每月外采报销的那张表</p>
+    <h1>20 份截图和发票<br>自动拼成<em>一张能报的清单</em></h1>
+    <p class="lede">
+      订单截图看买了什么、花了多少；发票是报销凭证。工具把两者配对、按成本中心拆开，
+      最后给出一张带凭证图的表格。下面从头点一遍，最后就是那张表。
+    </p>
 
     <div class="figures">
       <div><b>75<small>s</small></b><span>20 份文件<br>识别耗时</span></div>
       <div><b>10</b><span>商品<br>自动成行</span></div>
-      <div><b>0</b><span>手工<br>录数</span></div>
+      <div><b>13</b><span>列 = 模板<br>原样输出</span></div>
     </div>
 
     <a class="cta" href="#demo" id="cta">
-      <span>开始体验</span>
+      <span>从头试一遍</span>
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg>
     </a>
-    <p class="hero-note">以下数据来自真实跑过的一次 2026.9 外采，界面为适配手机做了精简，功能逻辑一致。</p>
+    <p class="hero-note">数据来自真实跑过的一次 2026.9 外采（20 份凭证），每一步的产出都会在下面显示出来。</p>
   </section>
 
   <section id="demo" class="demo">
@@ -641,14 +742,14 @@ body.has-bar{padding-bottom:76px}
       <div class="step on" data-step="1"><i>01</i><span>放入材料</span></div>
       <div class="step" data-step="2"><i>02</i><span>自动识别</span></div>
       <div class="step" data-step="3"><i>03</i><span>逐行校对</span></div>
-      <div class="step" data-step="4"><i>04</i><span>提交导出</span></div>
+      <div class="step" data-step="4"><i>04</i><span>生成表格</span></div>
     </div>
 
     <!-- ---------- 1 上传 ---------- -->
     <section class="panel" id="stage-upload">
       <div class="panel-h">
         <b>放入材料</b>
-        <span class="hint">截图 · 发票 · 登记表</span>
+        <span class="yield">产出：21 份材料已分类</span>
       </div>
 
       <div class="dropzone" id="dropzone">
@@ -675,14 +776,22 @@ body.has-bar{padding-bottom:76px}
           <b id="ppct">0%</b>
         </div>
       </div>
+
+      <p class="why">
+        <b>为什么要截图和发票一起放？</b>
+        截图里有商品名和实付金额，发票是报销凭证。两者金额经常对不上（运费、优惠、多件合并开票），
+        所以必须并排放、逐行核对——这正是后面要生成的两列。
+      </p>
     </section>
 
-    <!-- ---------- 2/3 结果 ---------- -->
+    <!-- ---------- 2/3 结果 + 4 表格 ---------- -->
     <section class="panel hidden" id="stage-result">
       <div class="panel-h">
         <b>识别结果</b>
-        <span class="hint" id="result-note"></span>
+        <span class="yield">产出：10 行清单初稿</span>
       </div>
+
+      <p class="hint-line" id="result-note"></p>
 
       <div class="stats" id="stats"></div>
       <div class="alert hidden" id="alert"></div>
@@ -694,21 +803,38 @@ body.has-bar{padding-bottom:76px}
       <div class="rowlist" id="rowlist"></div>
       <div class="unmatched hidden" id="unmatched"></div>
 
-      <div class="alloc">
-        <div class="alloc-h">
-          <b>费用分摊表</b>
-          <span class="hint" id="alloc-hint">与清单同步重算</span>
-        </div>
-        <div class="alloc-body" id="alloc"></div>
-      </div>
+      <p class="why">
+        <b>为什么还要人看一眼？</b>
+        OCR 和金额配对做不到 100%：小数位、同名商品、一张票多个商品都可能出错。
+        所以这里每个格子都能改、行能增删合并，改完一次提交——而不是回 Excel 返工。
+      </p>
 
-      <div class="export">
-        <div class="alloc-h">
-          <b>导出</b>
-          <span class="hint">真实工具直接落到本地目录</span>
+      <!-- ---------- 表格预览 ---------- -->
+      <div class="pv" id="pv">
+        <div class="pv-head">
+          <div class="pv-title">
+            <b>最后就长这样</b>
+            <span class="hint">用你刚才改的数据实时生成</span>
+          </div>
+          <div class="pv-tabs">
+            <button type="button" class="on" data-pv="sheet1">外部采购清单</button>
+            <button type="button" data-pv="sheet2">费用分摊表</button>
+          </div>
         </div>
-        <div class="export-grid" id="export-grid"></div>
-        <p class="demo-note">本页是静态演示，点导出只有提示；真实工具会在你电脑上生成这些文件。</p>
+        <p class="pv-meta" id="pv-meta"></p>
+        <div class="pv-wrap">
+          <div class="pv-scroll" id="pv-scroll">
+            <table class="xls" id="tbl-pv"></table>
+          </div>
+        </div>
+        <div class="pv-foot">
+          <span class="pv-hint" id="pv-hint"></span>
+          <button type="button" class="pv-more" id="pv-more">看完整 13 列 ›</button>
+        </div>
+        <p class="demo-note">
+          真实工具会把这个表连同凭证图片导出成 Excel（含图版 / 无图版）、网页预览，并把截图与发票
+          按「商品名-金额」重命名打包。演示页只给看，不提供下载。
+        </p>
       </div>
 
       <button type="button" class="replay" id="btn-replay">↺ 重新播放演示</button>
@@ -724,13 +850,14 @@ body.has-bar{padding-bottom:76px}
   </section>
 
   <section class="caps">
-    <h2>这套流程里做了什么</h2>
+    <h2>这套流程解决了什么</h2>
     <div class="cap-grid" id="cap-grid"></div>
   </section>
 
   <section class="note-block">
-    <h2>为什么还留一步人工校对</h2>
-    <p>OCR 与金额配对做不到 100%：小数点、同名商品、一张票多个商品都会出错。与其做成“看着全自动、错了还得回 Excel 手改”，不如把纠错放在流程里——表格每格可改、行可增删合并、票可重挂，改完一次提交，导出的就是最终版。</p>
+    <h2>它不是一个"全自动"的玩具</h2>
+    <p>真正费时间的不是识别，而是<b>核对</b>：哪张票对应哪一行、金额差 2 毛是运费还是折扣、这笔钱该记到哪个中心。
+       所以这个工具把力气花在“让人改得快”上——表格可改、票可重挂、分摊自动算，改完一次提交，导出的就是定稿。</p>
     <div class="note-facts">
       <div><b>逐格</b><span>名称 / 数量 / 金额 / 渠道</span></div>
       <div><b>整行</b><span>增删 · 移动 · 合并</span></div>
@@ -1021,26 +1148,6 @@ window.DEMO={"month":"2026.9","elapsed":75.6,"centers":["总裁办","人力行�
   }
 
   /* ---------------- 渲染：分摊表 ---------------- */
-  function renderAlloc() {
-    var list = allocation();
-    var total = list.reduce(function (a, x) { return a + x.amount; }, 0);
-    if (!list.length) {
-      $('#alloc').innerHTML = '<div class="alloc-row"><span class="muted">还没有选择成本中心</span></div>';
-      return;
-    }
-    var sum = list.reduce(function (a, x) { return a + x.amount; }, 0) || 1;
-    var html = list.map(function (x) {
-      return '<div class="alloc-row">' +
-        '<div class="c"><span>' + esc(x.center) + '</span></div>' +
-        '<div class="r"><b>' + x.amount.toFixed(2) + '</b>' +
-        '<em>' + Math.round(x.amount / sum * 100) + '%</em></div></div>';
-    }).join('');
-    html += '<div class="alloc-row total"><div class="c"><span>分摊合计</span>' +
-      '<em>' + (Math.abs(total - totals().amount) < 0.01 ? '与清单一致' : '与清单不一致') + '</em></div>' +
-      '<b>' + total.toFixed(2) + '</b></div>';
-    $('#alloc').innerHTML = html;
-  }
-
   /* ---------------- 渲染：提交条 ---------------- */
   function renderCommit() {
     var bar = $('#commitbar');
@@ -1060,7 +1167,7 @@ window.DEMO={"month":"2026.9","elapsed":75.6,"centers":["总裁办","人力行�
     renderStats(t);
     renderRows();
     renderUnmatched();
-    renderAlloc();
+    renderPreview();
     renderCommit();
 
     var warns = S.rows.filter(function (r) { return r.warn && r.warn.length; });
@@ -1354,8 +1461,9 @@ window.DEMO={"month":"2026.9","elapsed":75.6,"centers":["总裁办","人力行�
       btn.disabled = false;
       btn.textContent = '更新表格';
       renderAll();
-      toast('已更新 ' + n + ' 处：Excel、分摊表、两个命名包重出', 'ok');
-      $('#alloc-hint').textContent = '刚刚重算';
+      setStep(4);
+      toast('已更新 ' + n + ' 处，下面这张表已按新数据重出', 'ok');
+      $('#pv').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 900);
   }
 
@@ -1417,24 +1525,173 @@ window.DEMO={"month":"2026.9","elapsed":75.6,"centers":["总裁办","人力行�
     });
   }
 
-  /* ---------------- 导出 ---------------- */
-  var EXPORTS = [
-    { ic: '表', cls: '', t: 'Excel（含图）', d: '13 列 + 凭证图，可直接报' },
-    { ic: '表', cls: 'x', t: '无图版', d: '体积小，适合邮件传' },
-    { ic: '网', cls: 'x', t: '网页预览', d: '发群里直接用浏览器看' },
-    { ic: '包', cls: 'z', t: '两个命名包', d: '截图 / 发票按「商品-金额」重命名' }
-  ];
-  function renderExports() {
-    $('#export-grid').innerHTML = EXPORTS.map(function (x) {
-      return '<button type="button" class="ex" data-ex="' + esc(x.t) + '">' +
-        '<span class="ex-t"><i class="' + x.cls + '">' + x.ic + '</i>' + esc(x.t) + '</span>' +
-        '<span class="ex-d">' + esc(x.d) + '</span></button>';
+  /* ---------------- 最终表格预览 ---------------- */
+  var PV = 'sheet1';
+  var PVFULL = false;
+
+  function sheet1Fit() {
+    var t = totals();
+    var rows = S.rows.map(function (r) {
+      var diff = (r.invoice_amount != null && r.amount != null)
+        ? r2(Number(r.invoice_amount) - Number(r.amount)) : 0;
+      return '<tr>' +
+        '<td class="c">' + r.seq + '</td>' +
+        '<td class="nm">' + esc(r.name) +
+        (Math.abs(diff) >= 0.01 ? '<i class="flag">票差 ' + Math.abs(diff).toFixed(2) + '</i>' : '') +
+        '</td>' +
+        '<td class="r">' + (r.amount == null ? '—' : Number(r.amount).toFixed(2)) + '</td>' +
+        '<td class="r">' + (r.invoice_amount == null ? '—' : Number(r.invoice_amount).toFixed(2)) + '</td>' +
+        '</tr>';
     }).join('');
-    $$('#export-grid .ex').forEach(function (b) {
-      b.onclick = function () {
-        toast('演示页不提供下载；真实工具会生成「' + b.dataset.ex + '」到本地', 'warn');
-      };
+    return '<thead><tr><th>序号</th><th>名称</th><th>金额</th><th>发票金额</th></tr></thead><tbody>' +
+      rows +
+      '<tr class="total"><td></td><td>合计</td><td class="r">' + t.amount.toFixed(2) +
+      '</td><td class="r">' + t.invoice.toFixed(2) + '</td></tr></tbody>';
+  }
+
+  function sheet1HTML() {
+    var t = totals();
+    var rows = S.rows.map(function (r) {
+      var inv = invByKey((r.inv || [])[0]);
+      var shot = r.shot ? '<img src="' + img(r.shot) + '" alt="">' : '';
+      var invImg = inv ? '<img class="inv" src="' + img(inv.img) + '" alt="">' : '';
+      var cc = (r.centers || []).filter(function (c) { return c.center; })
+        .map(function (c) { return c.center + '（' + (Number(c.amount) || 0).toFixed(2) + '）'; })
+        .join('；');
+      return '<tr>' +
+        '<td class="c st1">' + r.seq + '</td>' +
+        '<td class="c">' + esc(r.date || '—') + '</td>' +
+        '<td class="nm st2">' + esc(r.name) + '</td>' +
+        '<td class="c">' + esc(r.unit || '') + '</td>' +
+        '<td class="c">' + (r.qty == null ? '' : qty(r.qty)) + '</td>' +
+        '<td class="c">' + shot + '</td>' +
+        '<td class="r">' + (r.amount == null ? '' : Number(r.amount).toFixed(2)) + '</td>' +
+        '<td class="c">' + invImg + '</td>' +
+        '<td class="r">' + (r.invoice_amount == null ? '' : Number(r.invoice_amount).toFixed(2)) + '</td>' +
+        '<td class="c">' + esc(r.channel || '') + '</td>' +
+        '<td class="c">—</td>' +
+        '<td class="cc">' + esc(cc || '未选') + '</td>' +
+        '<td class="c">—</td>' +
+        '</tr>';
+    }).join('');
+
+    return '<thead>' +
+      '<tr><th class="st1">序号</th><th>采购日期</th><th class="st2">名称</th><th>单位</th><th>数量</th>' +
+      '<th>订单截图</th><th>金额</th><th>发票</th><th>发票金额</th><th>购买渠道</th><th>OA流程</th>' +
+      '<th>成本中心</th><th>备注</th></tr></thead><tbody>' + rows +
+      '<tr class="total"><td class="c st1"></td><td class="c"></td><td class="st2">合计</td>' +
+      '<td colspan="3"></td><td class="r">' + t.amount.toFixed(2) + '</td><td></td>' +
+      '<td class="r">' + t.invoice.toFixed(2) + '</td><td colspan="4"></td></tr></tbody>';
+  }
+
+  function sheet2Fit() {
+    var lines = [];
+    S.rows.forEach(function (r) {
+      var cs = (r.centers || []).filter(function (c) { return c.center; });
+      if (!cs.length) {
+        lines.push({ seq: r.seq, name: r.name, center: '未选', amount: 0, first: true });
+        return;
+      }
+      cs.forEach(function (c, i) {
+        lines.push({ seq: r.seq, name: r.name, center: c.center,
+                     amount: Number(c.amount) || 0, first: i === 0 });
+      });
     });
+    var total = lines.reduce(function (a, x) { return a + x.amount; }, 0);
+    var body = lines.map(function (x) {
+      return '<tr>' +
+        '<td class="c">' + (x.first ? x.seq : '') + '</td>' +
+        '<td class="nm">' + (x.first ? esc(x.name) : '') + '</td>' +
+        '<td>' + esc(x.center) + '</td>' +
+        '<td class="r">' + x.amount.toFixed(2) + '</td></tr>';
+    }).join('');
+    return '<thead><tr><th>序号</th><th>商品名称</th><th>成本中心</th><th>金额</th></tr></thead><tbody>' +
+      body + '<tr class="total"><td></td><td>合计</td><td></td><td class="r">' +
+      total.toFixed(2) + '</td></tr></tbody>';
+  }
+
+  function sheet2HTML() {
+    var lines = [];
+    S.rows.forEach(function (r) {
+      var cs = (r.centers || []).filter(function (c) { return c.center; });
+      if (!cs.length) {
+        lines.push({ seq: r.seq, name: r.name, center: '未选成本中心', basis: '—', amount: 0, first: true });
+        return;
+      }
+      cs.forEach(function (c, i) {
+        var basis;
+        if (cs.length === 1) {
+          basis = '全额';
+        } else if (c.qty) {
+          basis = qty(c.qty) + (r.unit || '');
+        } else if (r.qty) {
+          basis = qty(r.qty) + (r.unit || '');
+        } else {
+          basis = '按金额';
+        }
+        lines.push({
+          seq: r.seq, name: r.name, center: c.center, basis: basis,
+          amount: Number(c.amount) || 0, first: i === 0
+        });
+      });
+    });
+    var total = lines.reduce(function (a, x) { return a + x.amount; }, 0);
+    var body = lines.map(function (x) {
+      return '<tr>' +
+        '<td class="c st1">' + (x.first ? x.seq : '') + '</td>' +
+        '<td class="nm st2">' + (x.first ? esc(x.name) : '') + '</td>' +
+        '<td>' + esc(x.center) + '</td>' +
+        '<td class="c">' + esc(x.basis) + '</td>' +
+        '<td class="r">' + x.amount.toFixed(2) + '</td></tr>';
+    }).join('');
+
+    return '<thead>' +
+      '<tr><th class="st1">序号</th><th class="st2">商品名称</th><th>成本中心</th>' +
+      '<th>分摊依据</th><th>金额</th></tr></thead><tbody>' + body +
+      '<tr class="total"><td class="c st1"></td><td class="st2">合计</td><td colspan="2"></td>' +
+      '<td class="r">' + total.toFixed(2) + '</td></tr></tbody>';
+  }
+
+  function meta1() {
+    var t = totals();
+    return '<b>' + esc(D.month) + ' 外部采购清单</b>' +
+      '<span>' + t.items + ' 行 · 合计 <b>¥' + t.amount.toFixed(2) + '</b>' +
+      ' · 发票合计 <b>¥' + t.invoice.toFixed(2) + '</b>' +
+      ' · 附凭证 ' + t.nInv + ' 票 / ' + t.nShot + ' 图</span>';
+  }
+
+  function meta2() {
+    var t = totals();
+    return '<b>' + esc(D.month) + ' 费用分摊表</b>' +
+      '<span>拆到 ' + allocation().length + ' 个成本中心 · 合计 <b>¥' +
+      t.amount.toFixed(2) + '</b></span>';
+  }
+
+  function renderPreview() {
+    var t = $('#tbl-pv');
+    if (!t) { return; }
+    var more = $('#pv-more');
+    more.style.display = (PV === 'sheet1') ? '' : 'none';
+
+    if (PV === 'sheet1') {
+      if (PVFULL) {
+        t.className = 'xls';
+        t.innerHTML = sheet1HTML();
+        $('#pv-hint').textContent = '← 左右滑动看完整 13 列 →';
+        more.textContent = '只看关键列 ‹';
+      } else {
+        t.className = 'xls fit';
+        t.innerHTML = sheet1Fit();
+        $('#pv-hint').textContent = '';
+        more.textContent = '看完整 13 列 ›';
+      }
+      $('#pv-meta').innerHTML = meta1();
+    } else {
+      t.className = 'xls s2';
+      t.innerHTML = sheet2HTML();
+      $('#pv-hint').textContent = '';
+      $('#pv-meta').innerHTML = meta2();
+    }
   }
 
   /* ---------------- 能力区 ---------------- */
@@ -1484,6 +1741,19 @@ window.DEMO={"month":"2026.9","elapsed":75.6,"centers":["总裁办","人力行�
       attachMaterial(c.dataset.um, c.dataset.key);
     });
 
+    $('#pv-more').onclick = function () {
+      PVFULL = !PVFULL;
+      renderPreview();
+    };
+
+    $$('.pv-tabs button').forEach(function (b) {
+      b.onclick = function () {
+        PV = b.dataset.pv;
+        $$('.pv-tabs button').forEach(function (x) { x.classList.toggle('on', x === b); });
+        renderPreview();
+      };
+    });
+
     $('#btn-commit').onclick = commit;
     $('#btn-replay').onclick = function () { location.reload(); };
     $('#mask').onclick = closeSheet;
@@ -1500,7 +1770,7 @@ window.DEMO={"month":"2026.9","elapsed":75.6,"centers":["总裁办","人力行�
     S.inited = true;
     $('#month').textContent = D.month;
     renderFiles();
-    renderExports();
+    renderPreview();
     renderCaps();
     bind();
     setStep(1);
